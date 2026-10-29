@@ -19,7 +19,10 @@ rồi mở http://localhost:5173
 - Mỗi ngày có bài học, lab, quiz và tình huống thực tế
 - 6 dự án làm CV, 65 câu hỏi phỏng vấn, cheatsheet lệnh, máy tính subnet, terminal mô phỏng
 
-Tiến độ học được lưu trong localStorage của trình duyệt.
+- Ghi chú theo từng ngày (nhiều ghi chú, sửa/xoá được), trang tổng hợp ghi chú và xuất ra Markdown
+- Chuỗi ngày học liên tiếp, cảnh báo khi mất chuỗi, nhắc ôn tập sau 1/3/7/14 ngày
+
+Tiến độ, ghi chú, chuỗi học được lưu trong localStorage của trình duyệt (không gửi đi đâu). Dùng nút "Tải file .md" ở trang Ghi chú để sao lưu.
 
 ## Cấu trúc
 

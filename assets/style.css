@@ -102,7 +102,10 @@ kbd{font:.85em Consolas,monospace;background:var(--surface2);border:1px solid va
 .lesson>header h2{margin:0;font-size:1.35rem;flex:1;min-width:200px}
 .lesson>header .min{font-size:.82rem;color:var(--muted)}
 .lesson h3{color:var(--brand-2);margin-top:1.5em}
-.lesson-foot{display:flex;justify-content:flex-end;margin-top:18px;border-top:1px dashed var(--line);padding-top:14px}
+.lesson-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px;border-top:1px dashed var(--line);padding-top:14px}
+.lesson-foot>:only-child{margin-left:auto}
+.recall{font-size:.86rem;color:var(--muted);flex:1;min-width:220px}
+.foot-actions{display:flex;gap:8px;flex-wrap:wrap}
 .markbtn{border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:10px;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer}
 .markbtn.on{background:var(--ok);border-color:var(--ok);color:#fff}
 aside{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:10px;padding:10px 16px;margin:1em 0}
@@ -137,7 +140,7 @@ aside.job{border-color:#ea580c;background:color-mix(in srgb,#ea580c 9%,var(--sur
 
 /* flashcards / cheat */
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
-.toolbar input,.toolbar select,.field input,.field select,textarea.in,input.in{font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.toolbar input,.toolbar select,.field input,.field select,textarea.in,input.in,select.in{font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
 .toolbar input{flex:1;min-width:200px}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{border:1px solid var(--line);background:var(--surface);color:var(--text);padding:5px 13px;border-radius:99px;cursor:pointer;font:inherit;font-size:.88rem}
@@ -167,6 +170,28 @@ aside.job{border-color:#ea580c;background:color-mix(in srgb,#ea580c 9%,var(--sur
 .hint{font-size:.88rem;color:var(--muted)}
 .footer-nav{display:flex;justify-content:space-between;gap:12px;margin-top:40px;flex-wrap:wrap}
 .notice{font-size:.85rem;color:var(--muted);margin-top:30px;border-top:1px solid var(--line);padding-top:14px}
+.alarm{background:var(--bad-soft);color:var(--bad);border-bottom:2px solid var(--bad);padding:10px 16px;font-weight:700;font-size:.93rem;text-align:center;line-height:1.45}
+.alarm[hidden]{display:none}
+.streak{font-weight:700;color:var(--warn);font-size:.9rem;white-space:nowrap}
+.streak:empty{display:none}
+
+/* ghi chú & ôn tập */
+.noteform{display:grid;gap:10px;margin:12px 0}
+.noteform select,.noteform textarea{width:100%}
+.noteform .btn{justify-self:start}
+textarea.in{resize:vertical;line-height:1.55}
+.note{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:12px;padding:12px 16px;margin:10px 0}
+.note-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:.82rem;color:var(--muted)}
+.note-lesson{font-weight:600;color:var(--text)}
+.note-time{margin-left:auto}
+.note-text{white-space:pre-wrap;word-break:break-word;margin:8px 0}
+.note-edit{width:100%;margin:8px 0}
+.note-actions{display:flex;gap:8px}
+.note-actions .markbtn{padding:4px 12px;font-size:.85rem}
+.card.review{margin:20px 0;border-left:4px solid var(--warn)}
+.card.review h2{margin:0 0 6px;font-size:1.2rem}
+.rv{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:8px 0;border-top:1px dashed var(--line)}
+.rv a{flex:1;min-width:200px;font-weight:600}
 
 @media (max-width:900px){
   #menuBtn{display:inline-block}
