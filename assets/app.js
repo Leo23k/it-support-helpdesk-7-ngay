@@ -8,7 +8,7 @@
 
   /* ---------- lưu tiến độ ---------- */
   var KEY = 'itsh7-progress-v1';
-  var mem = { lessons: {}, labs: {}, quiz: {}, cards: {}, active: [], notes: [], reviews: {} };
+  var mem = { lessons: {}, labs: {}, quiz: {}, cards: {}, active: [], notes: [], reviews: {}, tools: {} };
   var store = {
     load: function () { try { var j = JSON.parse(localStorage.getItem(KEY)); if (j) mem = Object.assign(mem, j); } catch (e) {} },
     save: function () { try { localStorage.setItem(KEY, JSON.stringify(mem)); } catch (e) {} }
@@ -100,7 +100,7 @@
     var lessons = 0; C.days.forEach(function (d) { lessons += d.lessons.length; });
     var h = '<section class="hero"><h1>Từ con số 0 đến sẵn sàng đi làm IT Support / Helpdesk — trong 7 ngày</h1>' +
       '<p>Lộ trình thực chiến bám sát yêu cầu tuyển dụng fresher hiện nay: Windows, mạng, Active Directory, Microsoft 365, ticket &amp; ITIL, bảo mật cơ bản, kèm lab, quiz, dự án để bỏ vào CV và bộ câu hỏi phỏng vấn.</p>' +
-      '<div class="btns"><a class="btn" href="#/day/1">▶ Bắt đầu Ngày 1</a><a class="btn ghost" href="#/projects">Xem dự án CV</a><a class="btn ghost" href="#/interview">Luyện phỏng vấn</a></div>' +
+      '<div class="btns"><a class="btn" href="#/day/1">▶ Bắt đầu Ngày 1</a><a class="btn ghost" href="#/tools">🛠️ Công cụ luyện tập</a><a class="btn ghost" href="#/projects">Xem dự án CV</a><a class="btn ghost" href="#/interview">Luyện phỏng vấn</a></div>' +
       '<div class="stats"><div class="stat"><b>7</b><span>ngày · 6–8 giờ/ngày</span></div><div class="stat"><b>' + lessons + '</b><span>bài học có ví dụ</span></div><div class="stat"><b>' + C.projects.length + '</b><span>dự án cho CV</span></div><div class="stat"><b>' + C.interview.length + '</b><span>câu hỏi phỏng vấn</span></div><div class="stat"><b>' + streakInfo().cur + '</b><span>ngày học liên tiếp · cao nhất ' + streakInfo().best + '</span></div></div></section>';
 
     h += reviewCard();
@@ -153,6 +153,8 @@
     h += '<section class="labbox" id="lab' + d.n + '"><h2>🧪 Lab: ' + esc(d.lab.title) + '</h2>' + d.lab.html +
       '<div class="lesson-foot"><button class="markbtn ' + (mem.labs['d' + d.n] ? 'on' : '') + '" data-act="lab" data-id="d' + d.n + '">' + (mem.labs['d' + d.n] ? '✓ Đã làm xong lab' : 'Đánh dấu đã làm lab') + '</button></div></section>';
 
+    var tl = window.TOOLS ? TOOLS.list.filter(function (x) { return x.days && x.days.indexOf(n) >= 0; }) : [];
+    if (tl.length) h += '<section class="card toolsrow"><h3>🛠️ Luyện thêm bằng công cụ</h3><div class="chips">' + tl.map(function (x) { return '<a class="chip" href="#/tools/' + x.id + '">' + x.icon + ' ' + esc(x.title) + '</a>'; }).join('') + '</div></section>';
     h += dayNotesSection(d);
     h += '<section id="quiz' + d.n + '"><div class="section-title"><h2>✅ Quiz kiểm tra (đạt ≥ 70% để hoàn thành)</h2></div>' + renderQuiz('d' + d.n + 'q', d.quiz, true) +
       '<div class="section-title"><h2>🎯 Tình huống thực tế — bạn sẽ xử lý thế nào?</h2></div>' + renderQuiz('d' + d.n + 's', d.scenarios, false) + '</section>';
@@ -247,114 +249,6 @@
       h += '</div>';
     });
     $('#chList').innerHTML = h || '<p>Không tìm thấy.</p>';
-  }
-
-  /* ---------- công cụ: subnet, terminal, ports ---------- */
-  function pageTools() {
-    var h = '<h1>🛠️ Công cụ luyện tập</h1><p>Ba công cụ nhỏ chạy ngay trong trình duyệt để luyện những kỹ năng hay bị hỏi nhất: tính subnet, đọc kết quả lệnh mạng, nhớ cổng dịch vụ.</p>';
-    h += '<div class="section-title"><h2>1. Máy tính subnet (IPv4)</h2></div><div class="card"><div class="field"><input class="in" id="snIp" value="192.168.10.77" aria-label="Địa chỉ IP"><span>/</span><input class="in" id="snCidr" type="number" min="0" max="32" value="26" style="width:80px" aria-label="Prefix"><button class="btn" data-act="subnet">Tính</button></div><div id="snOut" class="result"></div><p class="hint">Thử: 10.0.5.130/22 · 172.16.4.9/20 · 192.168.1.1/30. Tự tính tay trước (xem Ngày 3), rồi dùng công cụ để kiểm tra.</p></div>';
-    h += '<div class="section-title"><h2>2. Terminal mô phỏng — chẩn đoán mạng</h2></div><div class="card"><p>Chọn một sự cố, rồi dùng <code>ipconfig</code>, <code>ping</code>, <code>nslookup</code>, <code>tracert</code>… để tìm nguyên nhân như đang hỗ trợ user thật. Gõ <code>help</code> để xem lệnh.</p>' +
-      '<div class="field"><select class="in" id="tmCase"><option value="ok">Mạng bình thường</option><option value="apipa">Sự cố A (user: “mất mạng”)</option><option value="dns">Sự cố B (user: “vào web không được”)</option><option value="gw">Sự cố C (user: “internet đứt”)</option><option value="vpn">Sự cố D (user: “không vào được file server”)</option></select><button class="markbtn" data-act="tmreveal">Xem đáp án</button></div>' +
-      '<div class="term" id="term" tabindex="0"></div><p class="hint" id="tmAns"></p></div>';
-    h += '<div class="section-title"><h2>3. Cổng (port) &amp; giao thức hay gặp</h2></div><div class="card" style="padding:0"><table><thead><tr><th>Cổng</th><th>Giao thức</th><th>Dịch vụ</th><th>Gặp khi nào</th></tr></thead><tbody>' +
-      C.ports.map(function (p) { return '<tr><td><code>' + p[0] + '</code></td><td>' + p[1] + '</td><td>' + p[2] + '</td><td>' + p[3] + '</td></tr>'; }).join('') + '</tbody></table></div>';
-    return h;
-  }
-  function ip2n(s) { var p = s.trim().split('.'); if (p.length !== 4) return null; var n = 0; for (var i = 0; i < 4; i++) { var v = +p[i]; if (p[i] === '' || isNaN(v) || v < 0 || v > 255) return null; n = n * 256 + v; } return n; }
-  function n2ip(n) { return [n >>> 24, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join('.'); }
-  function subnet() {
-    var ip = ip2n($('#snIp').value), c = parseInt($('#snCidr').value, 10), out = $('#snOut');
-    if (ip === null || isNaN(c) || c < 0 || c > 32) { out.innerHTML = '<div><b>Lỗi</b><span>IP hoặc prefix không hợp lệ</span></div>'; return; }
-    var mask = c === 0 ? 0 : (0xFFFFFFFF << (32 - c)) >>> 0, net = (ip & mask) >>> 0, bc = (net | (~mask >>> 0)) >>> 0;
-    var hosts = c >= 31 ? (c === 32 ? 1 : 2) : Math.pow(2, 32 - c) - 2;
-    var first = c >= 31 ? net : net + 1, last = c >= 31 ? bc : bc - 1;
-    var a = ip >>> 24, priv = (a === 10) || (a === 172 && ((ip >>> 16) & 255) >= 16 && ((ip >>> 16) & 255) <= 31) || (a === 192 && ((ip >>> 16) & 255) === 168);
-    var kind = priv ? 'Private (RFC1918)' : (a === 169 && ((ip >>> 16) & 255) === 254) ? 'APIPA (DHCP lỗi!)' : a === 127 ? 'Loopback' : 'Public / khác';
-    var cls = a < 128 ? 'A' : a < 192 ? 'B' : a < 224 ? 'C' : a < 240 ? 'D (multicast)' : 'E';
-    var rows = [['Network', n2ip(net)], ['Broadcast', n2ip(bc)], ['Subnet mask', n2ip(mask)], ['Wildcard', n2ip(~mask >>> 0)], ['Host đầu tiên', n2ip(first)], ['Host cuối cùng', n2ip(last)], ['Số host dùng được', hosts.toLocaleString('vi-VN')], ['Loại địa chỉ', kind + ' · lớp ' + cls], ['Nhị phân mask', n2ip(mask).split('.').map(function (x) { return ('00000000' + (+x).toString(2)).slice(-8); }).join('.')]];
-    out.innerHTML = rows.map(function (r) { return '<div><b>' + r[0] + '</b><span>' + r[1] + '</span></div>'; }).join('');
-  }
-
-  /* terminal mô phỏng */
-  var T = { case: 'ok', hist: [] };
-  var NET = {
-    ok:    { ip: '192.168.1.45', mask: '255.255.255.0', gw: '192.168.1.1', dns: '192.168.1.10', ping: { gw: true, ext: true, dns: true } },
-    apipa: { ip: '169.254.87.12', mask: '255.255.0.0', gw: '', dns: '', ping: { gw: false, ext: false, dns: false } },
-    dns:   { ip: '192.168.1.45', mask: '255.255.255.0', gw: '192.168.1.1', dns: '192.168.1.10', ping: { gw: true, ext: true, dns: false } },
-    gw:    { ip: '192.168.1.45', mask: '255.255.255.0', gw: '192.168.1.1', dns: '192.168.1.10', ping: { gw: false, ext: false, dns: false } },
-    vpn:   { ip: '192.168.1.45', mask: '255.255.255.0', gw: '192.168.1.1', dns: '8.8.8.8', ping: { gw: true, ext: true, dns: true }, dnsPublic: true }
-  };
-  var ANS = {
-    ok: 'Mạng bình thường — dùng để so sánh với các sự cố.',
-    apipa: 'Đáp án A: IP 169.254.x.x (APIPA) = máy không nhận được địa chỉ từ DHCP. Kiểm tra cáp/Wi-Fi, DHCP server, rồi ipconfig /release → /renew.',
-    dns: 'Đáp án B: ping IP (8.8.8.8) được nhưng ping tên thì không → lỗi phân giải DNS. Kiểm tra DNS server được cấp, ipconfig /flushdns, nslookup, đổi thử DNS.',
-    gw: 'Đáp án C: có IP hợp lệ nhưng không ping được default gateway → lỗi từ gateway/switch/cáp/VLAN trở đi (không phải lỗi máy user). Báo L2/network, thử cổng/cáp/Wi-Fi khác.',
-    vpn: 'Đáp án D: máy dùng DNS công cộng 8.8.8.8 nên không phân giải được tên nội bộ (fileserver.corp.local). Do VPN/DHCP không cấp DNS nội bộ: kết nối lại VPN, kiểm tra cấu hình DNS của VPN adapter.'
-  };
-  function tprint(t, cls) { var d = document.createElement('div'); d.className = 'l ' + (cls || ''); d.textContent = t; var term = $('#term'); term.insertBefore(d, $('#tmLine')); term.scrollTop = term.scrollHeight; }
-  function termInit() {
-    var term = $('#term'); if (!term) return;
-    term.innerHTML = '<div class="l">Microsoft Windows [Version 10.0.22631.4890]\n(Giả lập — gõ "help" để xem lệnh)\n</div><div id="tmLine"><span class="p">C:\\Users\\user&gt;</span> <input id="tmIn" autocomplete="off" spellcheck="false" aria-label="Dòng lệnh"></div>';
-    $('#tmIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') { var v = this.value; this.value = ''; runCmd(v); } });
-    term.addEventListener('click', function () { $('#tmIn').focus(); });
-  }
-  function resolve(host, N) {
-    host = host.toLowerCase();
-    var map = { 'google.com': '142.250.199.14', 'www.google.com': '142.250.199.14', 'fileserver.corp.local': '192.168.1.20', 'corp.local': '192.168.1.10', 'dc01.corp.local': '192.168.1.10', 'microsoft.com': '20.70.246.20' };
-    if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) return host;
-    if (T.case === 'dns' || T.case === 'apipa' || T.case === 'gw') return null;
-    if (T.case === 'vpn' && /corp\.local$/.test(host)) return null;
-    return map[host] || null;
-  }
-  function runCmd(raw) {
-    var cmd = raw.trim(), N = NET[T.case], low = cmd.toLowerCase(), a = low.split(/\s+/);
-    tprint('C:\\Users\\user> ' + cmd, 'p');
-    if (!cmd) return;
-    if (a[0] === 'help') return tprint('Lệnh: ipconfig [/all|/release|/renew|/flushdns] · ping <host> · nslookup <host> · tracert <host> · hostname · whoami · arp -a · netstat -an · cls');
-    if (a[0] === 'cls') { $$('#term .l').forEach(function (x) { x.remove(); }); return; }
-    if (a[0] === 'hostname') return tprint('PC-ACC-017');
-    if (a[0] === 'whoami') return tprint('corp\\nguyen.an');
-    if (a[0] === 'ipconfig') {
-      if (a[1] === '/flushdns') return tprint('Windows IP Configuration\n\nSuccessfully flushed the DNS Resolver Cache.');
-      if (a[1] === '/release') return tprint('Windows IP Configuration\n\nEthernet adapter Ethernet:\n\n   Connection-specific DNS Suffix  . :\n   Default Gateway . . . . . . . . . :\n   (Địa chỉ IPv4 đã được trả lại cho DHCP server)');
-      if (a[1] === '/renew') return tprint(T.case === 'apipa' ? 'An error occurred while renewing interface Ethernet : unable to contact your DHCP server. Request has timed out.' : 'Ethernet adapter Ethernet:\n   IPv4 Address. . . . . . . . . . . : ' + N.ip + '\n   (Đã gia hạn thành công)');
-      var full = a[1] === '/all';
-      var o = 'Windows IP Configuration\n\n' + (full ? '   Host Name . . . . . . . . . . . . : PC-ACC-017\n   Primary Dns Suffix  . . . . . . . : corp.local\n' : '') + 'Ethernet adapter Ethernet:\n\n   Connection-specific DNS Suffix  . : ' + (T.case === 'apipa' ? '' : 'corp.local') + '\n' +
-        (full ? '   Physical Address. . . . . . . . . : 8C-16-45-A2-3F-1B\n   DHCP Enabled. . . . . . . . . . . : Yes\n' : '') +
-        (T.case === 'apipa' ? '   Autoconfiguration IPv4 Address. . : ' + N.ip + '(Preferred)\n' : '   IPv4 Address. . . . . . . . . . . : ' + N.ip + '(Preferred)\n') +
-        '   Subnet Mask . . . . . . . . . . . : ' + N.mask + '\n   Default Gateway . . . . . . . . . : ' + N.gw + '\n' +
-        (full ? '   DHCP Server . . . . . . . . . . . : ' + (T.case === 'apipa' ? '' : '192.168.1.10') + '\n   DNS Servers . . . . . . . . . . . : ' + N.dns + '\n' : '');
-      return tprint(o);
-    }
-    if (a[0] === 'ping') {
-      var host = a[1]; if (!host) return tprint('Usage: ping <host>');
-      var ip = resolve(host, N);
-      if (!ip) return tprint('Ping request could not find host ' + host + '. Please check the name and try again.');
-      var ok = ip === '127.0.0.1' || ip === N.ip ? true : ip === N.gw ? N.ping.gw : (ip === '192.168.1.10' ? N.ping.gw : N.ping.ext);
-      if (ip === '192.168.1.20' && T.case === 'vpn') ok = false;
-      var lines = 'Pinging ' + (host !== ip ? host + ' [' + ip + ']' : ip) + ' with 32 bytes of data:\n';
-      if (ok) { for (var i = 0; i < 4; i++) lines += 'Reply from ' + ip + ': bytes=32 time=' + (ip === N.gw ? 1 : 14 + i * 2) + 'ms TTL=' + (ip === N.gw ? 64 : 117) + '\n'; lines += '\nPing statistics for ' + ip + ':\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)'; }
-      else { var msg = T.case === 'apipa' ? 'PING: transmit failed. General failure.' : 'Request timed out.'; for (var k = 0; k < 4; k++) lines += msg + '\n'; lines += '\nPing statistics for ' + ip + ':\n    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)'; }
-      return tprint(lines);
-    }
-    if (a[0] === 'nslookup') {
-      var h = a[1]; if (!h) return tprint('Usage: nslookup <host>');
-      var r = resolve(h, N);
-      var head = 'Server:  ' + (N.dns || 'UnKnown') + '\nAddress:  ' + (N.dns || '') + '\n\n';
-      if (T.case === 'apipa') return tprint('DNS request timed out.\n    timeout was 2 seconds.\n*** Can\'t find server name for address ' + '(none)' + ': Timed out');
-      if (T.case === 'dns') return tprint('DNS request timed out.\n    timeout was 2 seconds.\nServer:  UnKnown\nAddress:  ' + N.dns + '\n\n*** UnKnown can\'t find ' + h + ': Timed out');
-      if (!r) return tprint(head + '*** ' + (N.dns) + ' can\'t find ' + h + ': Non-existent domain');
-      return tprint(head + 'Name:    ' + h + '\nAddress:  ' + r);
-    }
-    if (a[0] === 'tracert') {
-      var t = a[1]; if (!t) return tprint('Usage: tracert <host>');
-      var rip = resolve(t, N); if (!rip) return tprint('Unable to resolve target system name ' + t + '.');
-      if (!N.ping.gw) return tprint('Tracing route to ' + t + ' [' + rip + ']\n\n  1     *        *        *     Request timed out.\n  2     *        *        *     Request timed out.\n  3     *        *        *     Request timed out.');
-      return tprint('Tracing route to ' + t + ' [' + rip + ']\nover a maximum of 30 hops:\n\n  1    <1 ms    <1 ms    <1 ms  192.168.1.1\n  2     5 ms     4 ms     5 ms  10.20.0.1\n  3    12 ms    11 ms    12 ms  203.0.113.9\n  4    14 ms    15 ms    14 ms  ' + rip + '\n\nTrace complete.');
-    }
-    if (a[0] === 'arp') return tprint('Interface: ' + N.ip + ' --- 0x7\n  Internet Address      Physical Address      Type\n  ' + (N.gw || '192.168.1.1') + '        b0-4e-26-1c-9d-02     dynamic\n  192.168.1.255         ff-ff-ff-ff-ff-ff     static');
-    if (a[0] === 'netstat') return tprint('Active Connections\n\n  Proto  Local Address          Foreign Address        State\n  TCP    ' + N.ip + ':50321   142.250.199.14:443     ESTABLISHED\n  TCP    ' + N.ip + ':50400   192.168.1.20:445       ESTABLISHED\n  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING');
-    tprint("'" + a[0] + "' is not recognized as an internal or external command (hoặc chưa được giả lập). Gõ help.");
   }
 
   /* ---------- ghi chú ---------- */
@@ -514,6 +408,7 @@
   /* ---------- router ---------- */
   function route() {
     noteUI.editing = null;
+    if (window.TOOLS) TOOLS.leave();
     var r = (location.hash || '#/').replace(/^#\/?/, '').replace(/\/$/, ''), html;
     var m = r.match(/^day\/(\d+)$/);
     if (r === '') html = pageHome();
@@ -521,16 +416,17 @@
     else if (r === 'projects') html = pageProjects();
     else if (r === 'interview') html = pageInterview();
     else if (r === 'cheatsheet') html = pageCheat();
-    else if (r === 'tools') html = pageTools();
+    else if (r === 'tools' || /^tools\/[\w-]+$/.test(r)) html = TOOLS.page(r.slice(6));
     else if (r === 'notes') html = pageNotes();
     else html = notFound();
     $('#main').innerHTML = html;
-    renderNav(m ? 'day/' + m[1] : r);
+    renderNav(m ? 'day/' + m[1] : r.indexOf('tools') === 0 ? 'tools' : r);
     document.body.classList.remove('navopen');
+    document.body.classList.toggle('wide', r.indexOf('tools') === 0);
     addCopyButtons();
     if (r === 'interview') ivList();
     if (r === 'cheatsheet') chList();
-    if (r === 'tools') { subnet(); T.case = 'ok'; termInit(); }
+    if (r === 'tools' || r.indexOf('tools/') === 0) TOOLS.mount(r.slice(6));
     var pageTitle = m && C.days[+m[1] - 1] ? 'Ngày ' + m[1] + ': ' + C.days[+m[1] - 1].title : 'IT Support Fresher trong 7 ngày';
     document.title = pageTitle;
     window.scrollTo(0, 0);
@@ -572,8 +468,6 @@
     else if (act === 'copycmd') copy(t.dataset.c, t);
     else if (act === 'ivcat') { ivFilter.cat = t.dataset.cat; $$('[data-act="ivcat"]').forEach(function (b) { b.classList.toggle('on', b === t); }); ivList(); }
     else if (act === 'chcat') { chFilter.cat = t.dataset.cat; $$('[data-act="chcat"]').forEach(function (b) { b.classList.toggle('on', b === t); }); chList(); }
-    else if (act === 'subnet') subnet();
-    else if (act === 'tmreveal') $('#tmAns').textContent = ANS[T.case];
     else noteAction(act, t);
   });
   document.addEventListener('input', function (e) {
@@ -581,11 +475,7 @@
     if (e.target.id === 'chSearch') { chFilter.q = e.target.value; chList(); }
     if (e.target.id === 'nSearch') { noteUI.q = e.target.value; refreshNotes(); }
   });
-  document.addEventListener('change', function (e) {
-    if (e.target.id === 'tmCase') { T.case = e.target.value; $('#tmAns').textContent = ''; termInit(); }
-  });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && (e.target.id === 'snIp' || e.target.id === 'snCidr')) subnet();
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && /^nt-/.test(e.target.id)) {
       var b = e.target.parentNode.querySelector('[data-act^="noteadd"]'); if (b) b.click();
     }
@@ -600,6 +490,7 @@
   });
   $('#menuBtn').addEventListener('click', function () { document.body.classList.toggle('navopen'); });
   $('#scrim').addEventListener('click', function () { document.body.classList.remove('navopen'); });
+  window.APP = { mem: mem, save: store.save, esc: esc, copy: copy, markActive: markActive };
   window.addEventListener('hashchange', route);
   route();
 })();

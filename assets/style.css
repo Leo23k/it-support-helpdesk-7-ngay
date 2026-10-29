@@ -201,4 +201,10 @@ textarea.in{resize:vertical;line-height:1.55}
   .cmd{grid-template-columns:1fr auto}.cmd span{grid-column:1/-1;order:3}
   .top-progress{max-width:none}
 }
+@media (max-width:480px){
+  .topbar{gap:8px;padding:0 10px}
+  .brand small{display:none}
+  .top-progress{min-width:24px}
+  .top-pct{min-width:0}
+}
 @media print{.topbar,.nav,.copy,.markbtn{display:none}.shell{display:block}.lesson,.card{box-shadow:none}}

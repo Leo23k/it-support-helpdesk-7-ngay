@@ -68,7 +68,7 @@ COURSE.days.push({
 <tr><td>Dùng cho</td><td>Web, email, file, RDP</td><td>DNS, video call, VoIP, DHCP</td></tr>
 </tbody></table>
 <h3>Cổng (port) — số “cửa” của dịch vụ</h3>
-<p>Cổng giúp một máy có IP duy nhất chạy nhiều dịch vụ. Xem bảng đầy đủ ở trang <a href="#/tools">Công cụ</a>. Cần nhớ trước: <b>80 HTTP · 443 HTTPS · 22 SSH · 3389 RDP · 53 DNS · 67/68 DHCP · 25/587 SMTP · 445 SMB (file share) · 143/993 IMAP · 110/995 POP3 · 21 FTP · 23 Telnet · 389/636 LDAP</b>.</p>
+<p>Cổng giúp một máy có IP duy nhất chạy nhiều dịch vụ. Xem bảng đầy đủ và luyện nhớ ở <a href="#/tools/lookup">Tra mã lỗi &amp; cổng</a> và <a href="#/tools/cards">Thẻ ghi nhớ</a>. Cần nhớ trước: <b>80 HTTP · 443 HTTPS · 22 SSH · 3389 RDP · 53 DNS · 67/68 DHCP · 25/587 SMTP · 445 SMB (file share) · 143/993 IMAP · 110/995 POP3 · 21 FTP · 23 Telnet · 389/636 LDAP</b>.</p>
 <aside class="ex"><p>User RDP vào máy chủ báo lỗi. Bạn chạy <code>Test-NetConnection server01 -Port 3389</code> → <code>TcpTestSucceeded : False</code> → firewall/dịch vụ RDP chưa mở ở tầng 4. Nếu <code>True</code> thì lỗi nằm ở tài khoản/quyền, không phải mạng.</p></aside>`
     },
     {
@@ -97,7 +97,7 @@ COURSE.days.push({
 <tr><td>/30</td><td>255.255.255.252</td><td>2</td><td>4</td></tr>
 </tbody></table>
 <aside class="ex"><h4>Ví dụ: 192.168.10.77/26</h4>
-<p>Mask /26 → bước nhảy 64 ở octet cuối. Các mạng: .0, .64, .128, .192. Số 77 nằm trong khối .64 → <b>Network = 192.168.10.64</b>; <b>Broadcast = .127</b> (khối kế tiếp trừ 1); host dùng được <b>.65 → .126</b> (62 host). Thử lại bằng <a href="#/tools">máy tính subnet</a>.</p></aside>
+<p>Mask /26 → bước nhảy 64 ở octet cuối. Các mạng: .0, .64, .128, .192. Số 77 nằm trong khối .64 → <b>Network = 192.168.10.64</b>; <b>Broadcast = .127</b> (khối kế tiếp trừ 1); host dùng được <b>.65 → .126</b> (62 host). Thử lại bằng <a href="#/tools/subnet">máy tính subnet</a>, rồi luyện thật nhiều câu ở tab “Luyện tập” và <a href="#/tools/binary">luyện nhị phân</a>.</p></aside>
 <aside class="ex"><h4>Ví dụ lỗi “khác subnet”</h4>
 <p>PC A: 192.168.1.10/24, PC B: 192.168.<b>2</b>.20/24. Không ping được nhau vì khác mạng (cần router). Hoặc: PC A có mask 255.255.255.<b>128</b> (/25) và gateway .1; PC B .200 nằm ngoài /25 → máy A gửi nó qua gateway thay vì trực tiếp. Sai mask là lỗi rất “ngầm”.</p></aside>
 <h3>Địa chỉ MAC &amp; IPv6 (nắm sơ lược)</h3>
@@ -157,7 +157,7 @@ Bước 4  ping &lt;default gateway&gt;   -> Fail: lỗi LAN (cáp, switch, AP, 
 Bước 5  ping 8.8.8.8             -> Fail: lỗi từ router ra ISP (router/modem/đường truyền)
 Bước 6  ping google.com          -> Fail (nhưng 8.8.8.8 OK): LỖI DNS (kiểm tra DNS server, flushdns, nslookup)
 Bước 7  Chỉ 1 website lỗi?       -> Website/proxy/firewall/cổng 80,443; thử trình duyệt khác, tắt VPN/proxy</code></pre>
-<aside class="ex"><p>User: “Tôi vào được Teams nhưng không vào được web nội bộ intranet.corp.local”. <code>ping intranet.corp.local</code> → “could not find host”. <code>ipconfig /all</code> thấy DNS = 8.8.8.8 (do VPN cấu hình sai). Đổi sang DNS nội bộ/kết nối lại VPN → hết lỗi. Đây chính là mô phỏng <b>Sự cố D</b> trong <a href="#/tools">terminal mô phỏng</a>.</p></aside>
+<aside class="ex"><p>User: “Tôi vào được Teams nhưng không vào được web nội bộ intranet.corp.local”. <code>ping intranet.corp.local</code> → “could not find host”. <code>ipconfig /all</code> thấy DNS = 8.8.8.8 (do VPN cấu hình sai). Đổi sang DNS nội bộ/kết nối lại VPN → hết lỗi. Bạn có thể tự tay xử lý đúng tình huống này trong <a href="#/tools/terminal">terminal mô phỏng</a> (bài “VPN: Teams chạy, file server không vào được”).</p></aside>
 <h3>Đọc kết quả ping</h3>
 <ul>
 <li><code>Reply from … time=14ms TTL=117</code>: thông. Time cao (&gt;150ms) liên tục: nghẽn/Wi-Fi yếu.</li>
@@ -212,7 +212,7 @@ interface g0/1
   lab: {
     title: 'Dựng mạng văn phòng nhỏ bằng Cisco Packet Tracer + luyện terminal mô phỏng',
     html: `
-<p><b>Thời gian:</b> ~2 giờ. <b>Công cụ:</b> Cisco Packet Tracer (miễn phí, đăng ký tài khoản Cisco Networking Academy “Introduction to Packet Tracer” để tải) hoặc GNS3. Nếu chưa tải được, dùng terminal ở trang <a href="#/tools">Công cụ</a> làm phần 4.</p>
+<p><b>Thời gian:</b> ~2 giờ. <b>Công cụ:</b> Cisco Packet Tracer (miễn phí, đăng ký tài khoản Cisco Networking Academy “Introduction to Packet Tracer” để tải) hoặc GNS3. Nếu chưa tải được, dùng <a href="#/tools/terminal">terminal giả lập</a> (14 tình huống ticket thật) làm phần 4.</p>
 <ol class="steps">
 <li><b>Sơ đồ:</b> 1 Router (2911) – 1 Switch (2960) – 4 PC; 1 Server làm DHCP/DNS/Web; 1 máy in. Đặt IP router LAN <code>192.168.10.1/24</code>.</li>
 <li><b>DHCP:</b> trên Server bật DHCP, pool <code>192.168.10.100–200</code>, gateway <code>192.168.10.1</code>, DNS <code>192.168.10.5</code>. Đặt PC sang DHCP và kiểm tra nhận IP bằng <code>ipconfig</code>.</li>
